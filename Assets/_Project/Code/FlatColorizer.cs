@@ -2,7 +2,9 @@ using UnityEngine;
 
 public class FlatColorizer : MonoBehaviour
 {
-    [SerializeField] private Color[] _color;
+#if UNITY_EDITOR
+
+    public Color[] _color;
 
     private MeshRenderer _renderer;
     private MeshFilter _meshFilter;
@@ -24,14 +26,16 @@ public class FlatColorizer : MonoBehaviour
         if (_meshFilter == null)
             _meshFilter = GetComponent<MeshFilter>();
 
+        if (_meshFilter.sharedMesh == null)
+        {
+            Debug.LogError("there is no mesh to flat colorize");
+            return;
+        }
+
         Mesh flatColoredMesh = FlatColorizerManager.GetFlatColorizedMesh(_meshFilter.sharedMesh);
         if (_meshFilter.sharedMesh != flatColoredMesh)
         {
             _meshFilter.sharedMesh = flatColoredMesh;
-            for (int i = 0; i < flatColoredMesh.uv.Length; i++)
-            {
-                Debug.Log(flatColoredMesh.uv[i]);
-            }
         }
     }
 
@@ -39,5 +43,9 @@ public class FlatColorizer : MonoBehaviour
     {
         AddMaterial();
         AddMesh();
+        Debug.Log("flat");
     }
+
+
+#endif
 }

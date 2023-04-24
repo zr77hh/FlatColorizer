@@ -4,8 +4,11 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
+
 public static class FlatColorizerManager
 {
+#if UNITY_EDITOR
+    
     private const string FLAT_COLORED = "FlatColored_";
 
 
@@ -50,7 +53,10 @@ public static class FlatColorizerManager
         }
 
 
-        Texture2D texture = new Texture2D(512, 512);
+        Texture2D texture = new Texture2D(512, 512);//, TextureFormat.RGBA32, false);
+
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.filterMode = FilterMode.Point;
 
         // Set the colors of the texture
         texture.SetPixel(0, 0, Color.red);
@@ -67,7 +73,6 @@ public static class FlatColorizerManager
         AssetDatabase.Refresh();
 
         Debug.Log("new texture created");
-
         return texture;
     }
 
@@ -96,8 +101,33 @@ public static class FlatColorizerManager
 
         AssetDatabase.Refresh();
 
+        CreateFlatColoredMeshData(flatColoredMesh);
+
         Debug.Log("new mesh created");
         return flatColoredMesh;
+    }
+
+    private static FlatColoredMeshData CreateFlatColoredMeshData(Mesh flatColoredMesh)
+    {
+        // Create directory if it doesn't exist
+        string directoryPath = Path.Combine(Application.dataPath, "Resources/FlatColorizer/Mesh/MeshData");
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+            AssetDatabase.Refresh();
+        }
+
+        // Write JSON string to file
+        string filePath = Path.Combine(directoryPath, flatColoredMesh.name + "_data" + ".json");
+        StreamWriter writer = new StreamWriter(filePath, false);
+        FlatColoredMeshData flatColoredMeshData = new FlatColoredMeshData(flatColoredMesh);
+        writer.Write(EditorJsonUtility.ToJson(flatColoredMeshData));
+        writer.Close();
+
+        AssetDatabase.Refresh();
+
+        Debug.Log("new FlatColoredMeshData created");
+        return flatColoredMeshData;
     }
 
     public static Material GetSharedMaterial()
@@ -111,7 +141,7 @@ public static class FlatColorizerManager
 
     public static Texture2D GetTexture()
     {
-        Texture2D texture = Resources.Load<Texture2D>("FlatColorizer/Material/Texture/Texture");
+        Texture2D texture = Resources.Load<Texture2D>("FlatColorizer/Texture/Texture");
         if (texture == null)
             texture = CreateTexture();
         return texture;
@@ -122,10 +152,13 @@ public static class FlatColorizerManager
         if (mesh.name.Contains(FLAT_COLORED))
             return mesh;
 
-        Mesh flatColoredMesh = Resources.Load<Mesh>($"FlatColorizer/Mesh/{FLAT_COLORED}{mesh.name}.asset");
+        Mesh flatColoredMesh = Resources.Load<Mesh>($"FlatColorizer/Mesh/{FLAT_COLORED}{mesh.name}");
         if (flatColoredMesh == null)
             flatColoredMesh = CreateFlatColoredMesh(mesh);
 
         return flatColoredMesh;
     }
+
+#endif
+
 }

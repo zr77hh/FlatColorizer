@@ -19,7 +19,6 @@ public class CustomMeshRendererEditor : Editor
         if (_flatColorizer == null && GUILayout.Button($"Add {nameof(FlatColorizer)}"))
         {
             _flatColorizer = meshRenderer.gameObject.AddComponent<FlatColorizer>();
-            _flatColorizer.FlatColorize();
         }
     }
 }

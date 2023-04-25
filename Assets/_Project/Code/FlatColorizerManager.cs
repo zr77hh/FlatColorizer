@@ -8,7 +8,6 @@ using UnityEngine;
 public static class FlatColorizerManager
 {
 #if UNITY_EDITOR
-    
     private const string FLAT_COLORED = "FlatColored_";
 
 
@@ -159,6 +158,20 @@ public static class FlatColorizerManager
         return flatColoredMesh;
     }
 
-#endif
+    public static FlatColoredMeshData GetMeshData(Mesh mesh)
+    {
+        string directoryPath = Path.Combine(Application.dataPath, "Resources/FlatColorizer/Mesh/MeshData");
+        directoryPath = Path.Combine(directoryPath, mesh.name + "_data" + ".json");
 
+        StreamReader reader = new StreamReader(directoryPath);
+        string jsonString = reader.ReadToEnd();
+        reader.Close();
+
+        FlatColoredMeshData meshData = new FlatColoredMeshData(mesh);
+        EditorJsonUtility.FromJsonOverwrite(jsonString, meshData);
+
+        return meshData;
+    }
+
+#endif
 }

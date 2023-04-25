@@ -9,8 +9,17 @@ public class FlatColorizerEditor : Editor
 
     private void OnEnable()
     {
-        _flatColorizer = serializedObject.targetObject as FlatColorizer;
         _colorsProperty = serializedObject.FindProperty(nameof(FlatColorizer._color));
+        _flatColorizer = serializedObject.targetObject as FlatColorizer;
+
+        if (_flatColorizer != _flatColorizer.GetComponent<FlatColorizer>())
+        {
+            Debug.LogError($"there is already a {nameof(FlatColorizer)} component");
+            DestroyImmediate(_flatColorizer);
+            return;
+        }
+
+        _flatColorizer.FlatColorize();
     }
 
     public override void OnInspectorGUI()

@@ -4,7 +4,7 @@ public class FlatColorizer : MonoBehaviour
 {
 #if UNITY_EDITOR
 
-    public Color[] _color;
+    public Color[] _color = new Color[0];
 
     private MeshRenderer _renderer;
     private MeshFilter _meshFilter;
@@ -34,8 +34,22 @@ public class FlatColorizer : MonoBehaviour
 
         Mesh flatColoredMesh = FlatColorizerManager.GetFlatColorizedMesh(_meshFilter.sharedMesh);
         if (_meshFilter.sharedMesh != flatColoredMesh)
-        {
             _meshFilter.sharedMesh = flatColoredMesh;
+    }
+
+    private void UpdateColor()
+    {
+        if (_meshFilter.sharedMesh == null)
+            return;
+
+        FlatColoredMeshData meshData = FlatColorizerManager.GetMeshData(_meshFilter.sharedMesh);
+        if (_color.Length != meshData.colorGroups.Count)
+        {
+            _color = new Color[meshData.colorGroups.Count];
+            for (int i = 0; i < _color.Length; i++)
+            {
+                _color[i] = meshData.colorGroups[i].color;
+            }
         }
     }
 
@@ -43,7 +57,7 @@ public class FlatColorizer : MonoBehaviour
     {
         AddMaterial();
         AddMesh();
-        Debug.Log("flat");
+        UpdateColor();
     }
 
 

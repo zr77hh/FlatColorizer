@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 
 public class FlatColorizer : MonoBehaviour
@@ -8,6 +9,7 @@ public class FlatColorizer : MonoBehaviour
 
     private MeshRenderer _renderer;
     private MeshFilter _meshFilter;
+    private FlatColoredMeshData _meshData;
 
     private void AddMaterial()
     {
@@ -37,27 +39,40 @@ public class FlatColorizer : MonoBehaviour
             _meshFilter.sharedMesh = flatColoredMesh;
     }
 
-    private void UpdateColor()
+    private void AddColor()
     {
         if (_meshFilter.sharedMesh == null)
             return;
 
-        FlatColoredMeshData meshData = FlatColorizerManager.GetMeshData(_meshFilter.sharedMesh);
-        if (_color.Length != meshData.colorGroups.Count)
+        if (_meshData == null)
+            _meshData = FlatColorizerManager.GetMeshData(_meshFilter.sharedMesh);
+
+        if (_color.Length != _meshData.colorGroups.Count)
         {
-            _color = new Color[meshData.colorGroups.Count];
+            _color = new Color[_meshData.colorGroups.Count];
             for (int i = 0; i < _color.Length; i++)
             {
-                _color[i] = meshData.colorGroups[i].color;
+                _color[i] = _meshData.colorGroups[i].color;
             }
         }
+    }
+
+    public void UpdateColor(int colorIndex, Color color)
+    {
+        if (_meshFilter.sharedMesh == null)
+            return;
+
+        AddColor();
+
+        _color[colorIndex] = color;
+        _meshData.SetColor(colorIndex, color);
     }
 
     public void FlatColorize()
     {
         AddMaterial();
         AddMesh();
-        UpdateColor();
+        AddColor();
     }
 
 

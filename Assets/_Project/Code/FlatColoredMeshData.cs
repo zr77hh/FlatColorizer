@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 [System.Serializable]
-public class FlatColoredMeshData
+public class FlatColoredMeshData : ScriptableObject
 {
     public List<ColorGroupData> colorGroups;
 
@@ -23,9 +24,9 @@ public class FlatColoredMeshData
         colorGroups[colorGroups.Count - 1].AddPosIndex(uvIndex);
     }
 
-    public void SetColorGroupsPositions(List<Vector2> positions, Mesh mesh)
+    public void SetColorGroupsPositions(Vector2[] positions, Mesh mesh)
     {
-        for (int i = 0; i < positions.Count; i++)
+        for (int i = 0; i < positions.Length; i++)
         {
             Vector2 curTargetPos = positions[i];
             if (colorGroups[i].pos != curTargetPos)
@@ -39,9 +40,18 @@ public class FlatColoredMeshData
                 }
             }
         }
+        EditorUtility.SetDirty(this);
+        AssetDatabase.SaveAssets();
     }
-    
-    public FlatColoredMeshData(Mesh mesh)
+
+    public void SetColor(int colorIndex, Color color)
+    {
+        colorGroups[colorIndex].color = color;
+        //EditorUtility.SetDirty(this);
+        //AssetDatabase.SaveAssets();
+    }
+
+    public void SetData(Mesh mesh)
     {
         colorGroups = new List<ColorGroupData>();
 

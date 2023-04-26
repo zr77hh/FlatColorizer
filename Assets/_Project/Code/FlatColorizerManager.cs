@@ -68,7 +68,7 @@ public static class FlatColorizerManager
         string texturePath = $"{folderPath}/Texture.asset";
         AssetDatabase.CreateAsset(texture, texturePath);
 
-        // Refresh the asset database to ensure the new material appears in the project view
+        AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
         Debug.Log("new texture created");
@@ -98,6 +98,7 @@ public static class FlatColorizerManager
         string materialPath = $"{folderPath}/{FLAT_COLORED}{mesh.name}.asset";
         AssetDatabase.CreateAsset(flatColoredMesh, materialPath);
 
+        AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
         CreateFlatColoredMeshData(flatColoredMesh);
@@ -109,20 +110,20 @@ public static class FlatColorizerManager
     private static FlatColoredMeshData CreateFlatColoredMeshData(Mesh flatColoredMesh)
     {
         // Create directory if it doesn't exist
-        string directoryPath = Path.Combine(Application.dataPath, "Resources/FlatColorizer/Mesh/MeshData");
+        string directoryPath = "Assets/Resources/FlatColorizer/Mesh/MeshData";
         if (!Directory.Exists(directoryPath))
         {
             Directory.CreateDirectory(directoryPath);
             AssetDatabase.Refresh();
         }
 
-        // Write JSON string to file
-        string filePath = Path.Combine(directoryPath, flatColoredMesh.name + "_data" + ".json");
-        StreamWriter writer = new StreamWriter(filePath, false);
-        FlatColoredMeshData flatColoredMeshData = new FlatColoredMeshData(flatColoredMesh);
-        writer.Write(EditorJsonUtility.ToJson(flatColoredMeshData));
-        writer.Close();
+        FlatColoredMeshData flatColoredMeshData = ScriptableObject.CreateInstance<FlatColoredMeshData>();
+        flatColoredMeshData.SetData(flatColoredMesh);
 
+        string filePath = Path.Combine(directoryPath, flatColoredMesh.name + "_data" + ".asset");
+        AssetDatabase.CreateAsset(flatColoredMeshData, filePath);
+
+        AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
         Debug.Log("new FlatColoredMeshData created");
@@ -160,15 +161,9 @@ public static class FlatColorizerManager
 
     public static FlatColoredMeshData GetMeshData(Mesh mesh)
     {
-        string directoryPath = Path.Combine(Application.dataPath, "Resources/FlatColorizer/Mesh/MeshData");
-        directoryPath = Path.Combine(directoryPath, mesh.name + "_data" + ".json");
-
-        StreamReader reader = new StreamReader(directoryPath);
-        string jsonString = reader.ReadToEnd();
-        reader.Close();
-
-        FlatColoredMeshData meshData = new FlatColoredMeshData(mesh);
-        EditorJsonUtility.FromJsonOverwrite(jsonString, meshData);
+        FlatColoredMeshData meshData = Resources.Load<FlatColoredMeshData>($"FlatColorizer/Mesh/MeshData/{mesh.name + "_data"}");
+        if (meshData == null)
+            Debug.LogWarning($"{mesh.name}_data not found");
 
         return meshData;
     }

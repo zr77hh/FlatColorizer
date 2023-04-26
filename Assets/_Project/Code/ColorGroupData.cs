@@ -13,6 +13,7 @@ public class ColorGroupData
     {
         UV_posIndexes = new List<int>();
         pos = targetPos;
+        color = Color.white;
     }
 
     public void AddPosIndex(int index)

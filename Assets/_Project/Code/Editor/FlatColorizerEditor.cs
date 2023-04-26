@@ -37,7 +37,7 @@ public class FlatColorizerEditor : Editor
             if (EditorGUI.EndChangeCheck())
             {
                 colorProperty.colorValue = colorValue;
-                _flatColorizer.FlatColorize();
+                _flatColorizer.UpdateColor(i, colorValue);
             }
         }
 

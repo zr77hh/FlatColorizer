@@ -8,6 +8,7 @@ public class FlatColoredMeshData : ScriptableObject
 {
     public List<ColorGroupData> colorGroups;
 
+    public Mesh targetMesh;
 
     private void AddToColorGroups(int uvIndex, Vector2 uvPos)
     {
@@ -24,8 +25,11 @@ public class FlatColoredMeshData : ScriptableObject
         colorGroups[colorGroups.Count - 1].AddPosIndex(uvIndex);
     }
 
-    public void SetColorGroupsPositions(Vector2[] positions, Mesh mesh)
+    public void SetColorGroupsPositions(Vector2[] positions)
     {
+        targetMesh = FlatColorizerManager.GetFlatColorizedMesh(targetMesh);
+
+        Vector2[] uv = targetMesh.uv;
         for (int i = 0; i < positions.Length; i++)
         {
             Vector2 curTargetPos = positions[i];
@@ -36,10 +40,15 @@ public class FlatColoredMeshData : ScriptableObject
                 for (int e = 0; e < colorGroups[i].UV_posIndexes.Count; e++)
                 {
                     int uvIndex = colorGroups[i].UV_posIndexes[e];
-                    mesh.uv[uvIndex] = curTargetPos;
+                    targetMesh.uv[uvIndex] = curTargetPos;
+                    uv[uvIndex] = curTargetPos;
+                    Debug.Log("2lllll2dsadasdasda  :" + curTargetPos.ToString());
                 }
             }
         }
+        targetMesh.uv = uv;
+
+        EditorUtility.SetDirty(targetMesh);
         EditorUtility.SetDirty(this);
         AssetDatabase.SaveAssets();
     }
@@ -47,6 +56,7 @@ public class FlatColoredMeshData : ScriptableObject
     public void SetColor(int colorIndex, Color color)
     {
         colorGroups[colorIndex].color = color;
+        TextureManager.SetMeshColor(colorIndex, color);
         //EditorUtility.SetDirty(this);
         //AssetDatabase.SaveAssets();
     }
@@ -59,7 +69,10 @@ public class FlatColoredMeshData : ScriptableObject
         {
             AddToColorGroups(i, mesh.uv[i]);
         }
-
+        targetMesh = mesh;
+        TextureManager.AddMeshData(this);
+        EditorUtility.SetDirty(this);
+        AssetDatabase.SaveAssets();
         Debug.Log(colorGroups.Count);
     }
 }

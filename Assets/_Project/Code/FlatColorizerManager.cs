@@ -52,7 +52,7 @@ public static class FlatColorizerManager
         }
 
 
-        Texture2D texture = new Texture2D(512, 512);//, TextureFormat.RGBA32, false);
+        Texture2D texture = new Texture2D(256, 256);//, TextureFormat.RGBA32, false);
 
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.filterMode = FilterMode.Point;
@@ -126,6 +126,7 @@ public static class FlatColorizerManager
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
+
         Debug.Log("new FlatColoredMeshData created");
         return flatColoredMeshData;
     }
@@ -151,8 +152,9 @@ public static class FlatColorizerManager
     {
         if (mesh.name.Contains(FLAT_COLORED))
             return mesh;
+        string meshName = mesh.name.Contains(FLAT_COLORED) ? mesh.name : FLAT_COLORED + mesh.name;
 
-        Mesh flatColoredMesh = Resources.Load<Mesh>($"FlatColorizer/Mesh/{FLAT_COLORED}{mesh.name}");
+        Mesh flatColoredMesh = Resources.Load<Mesh>($"FlatColorizer/Mesh/{meshName}");
         if (flatColoredMesh == null)
             flatColoredMesh = CreateFlatColoredMesh(mesh);
 

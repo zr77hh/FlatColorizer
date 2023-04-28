@@ -4,12 +4,11 @@ using UnityEngine;
 [CustomEditor(typeof(FlatColorizer))]
 public class FlatColorizerEditor : Editor
 {
-    private SerializedProperty _colorsProperty;
     private FlatColorizer _flatColorizer;
+    private int _colorsCount;
 
     private void OnEnable()
     {
-        _colorsProperty = serializedObject.FindProperty(nameof(FlatColorizer._color));
         _flatColorizer = serializedObject.targetObject as FlatColorizer;
 
         if (_flatColorizer != _flatColorizer.GetComponent<FlatColorizer>())
@@ -20,15 +19,16 @@ public class FlatColorizerEditor : Editor
         }
 
         _flatColorizer.FlatColorize();
+        _colorsCount = _flatColorizer.GetColorCount();
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        for (int i = 0; i < _colorsProperty.arraySize; i++)
+
+        for (int i = 0; i < _colorsCount; i++)
         {
-            SerializedProperty colorProperty = _colorsProperty.GetArrayElementAtIndex(i);
-            Color colorValue = colorProperty.colorValue;
+            Color colorValue = _flatColorizer.GetColorAtIndex(i);
 
             EditorGUI.BeginChangeCheck();
 
@@ -36,7 +36,6 @@ public class FlatColorizerEditor : Editor
 
             if (EditorGUI.EndChangeCheck())
             {
-                colorProperty.colorValue = colorValue;
                 _flatColorizer.UpdateColor(i, colorValue);
             }
         }

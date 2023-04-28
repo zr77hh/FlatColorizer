@@ -52,7 +52,7 @@ public static class FlatColorizerManager
         }
 
 
-        Texture2D texture = new Texture2D(256, 256);//, TextureFormat.RGBA32, false);
+        Texture2D texture = new Texture2D(512, 512, TextureFormat.RGBA32, false);
 
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.filterMode = FilterMode.Point;

@@ -23,6 +23,9 @@ public class FlatColoredMeshData : ScriptableObject
 
         colorGroups.Add(new ColorGroupData(uvPos));
         colorGroups[colorGroups.Count - 1].AddPosIndex(uvIndex);
+
+
+        EditorUtility.SetDirty(this);
     }
 
     public void SetColorGroupsPositions(Vector2[] positions)
@@ -40,24 +43,22 @@ public class FlatColoredMeshData : ScriptableObject
                 for (int e = 0; e < colorGroups[i].UV_posIndexes.Count; e++)
                 {
                     int uvIndex = colorGroups[i].UV_posIndexes[e];
-                    targetMesh.uv[uvIndex] = curTargetPos;
                     uv[uvIndex] = curTargetPos;
-                    Debug.Log("2lllll2dsadasdasda  :" + curTargetPos.ToString());
                 }
             }
         }
         targetMesh.uv = uv;
 
-        EditorUtility.SetDirty(targetMesh);
         EditorUtility.SetDirty(this);
-        AssetDatabase.SaveAssets();
+        //AssetDatabase.SaveAssets();
     }
 
     public void SetColor(int colorIndex, Color color)
     {
         colorGroups[colorIndex].color = color;
         TextureManager.SetMeshColor(colorIndex, color);
-        //EditorUtility.SetDirty(this);
+      
+        EditorUtility.SetDirty(this);
         //AssetDatabase.SaveAssets();
     }
 

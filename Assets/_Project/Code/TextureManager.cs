@@ -17,8 +17,6 @@ public static class TextureManager
         {
             _texture.SetPixel(i, 0, meshData.colorGroups[i].color);
             positions[i] = new Vector2((float)i / _texture.width, 0);
-       
-            Debug.Log(positions[i].ToString());
         }
         _texture.Apply();
         meshData.SetColorGroupsPositions(positions);

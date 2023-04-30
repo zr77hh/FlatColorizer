@@ -13,22 +13,6 @@ public static class TextureManager
             _texture = FlatColorizerManager.GetTexture();
     }
 
-    private static int[] GetAllOccupiedPixelsIndexes()
-    {
-        List<int> occupiedPixelsIndexes = new List<int>();
-
-        FlatColoredMeshData[] allMeshesData = FlatColorizerManager.GetAllMeshesData();
-        for (int i = 0; i < allMeshesData.Length; i++)
-        {
-            for (int e = 0; e < allMeshesData[i].occupiedPixelsIndexes.Length; e++)
-            {
-                occupiedPixelsIndexes.Add(allMeshesData[i].occupiedPixelsIndexes[e]);
-            }
-        }
-
-        return occupiedPixelsIndexes.ToArray();
-    }
-
     private static Vector2Int IndexToPixelCoordinate(int index)
     {
         FindeTexture();
@@ -45,6 +29,21 @@ public static class TextureManager
         return y * _texture.width + x;
     }
 
+    private static int[] GetAllOccupiedPixelsIndexes()
+    {
+        List<int> occupiedPixelsIndexes = new List<int>();
+
+        FlatColoredMeshData[] allMeshesData = FlatColorizerManager.GetAllMeshesData();
+        for (int i = 0; i < allMeshesData.Length; i++)
+        {
+            for (int e = 0; e < allMeshesData[i].occupiedPixelsIndexes.Length; e++)
+            {
+                occupiedPixelsIndexes.Add(allMeshesData[i].occupiedPixelsIndexes[e]);
+            }
+        }
+
+        return occupiedPixelsIndexes.ToArray();
+    }
 
     private static int[] GetUnoccupiedPixelsIndexes(int count)
     {
@@ -74,25 +73,28 @@ public static class TextureManager
         return unoccupiedPixelsIndexes;
     }
 
-    public static void AddMeshData(FlatColoredMeshData meshData)
+    public static void InitMeshData(FlatColoredMeshData meshData)
     {
         FindeTexture();
 
-        int[] unoccupiedPixelsIndexes = GetUnoccupiedPixelsIndexes(meshData.colorGroups.Count);
-        Vector2[] positions = new Vector2[meshData.colorGroups.Count];
-        for (int i = 0; i < meshData.colorGroups.Count; i++)
+        List<ColorGroupData> colorGroups = meshData.colorGroups;
+
+        int[] unoccupiedPixelsIndexes = GetUnoccupiedPixelsIndexes(colorGroups.Count);
+
+        Vector2[] uvPositions = new Vector2[colorGroups.Count];
+        for (int i = 0; i < colorGroups.Count; i++)
         {
             Vector2Int pixelCoordinate = IndexToPixelCoordinate(unoccupiedPixelsIndexes[i]);
 
-            positions[i] = new Vector2((float)pixelCoordinate.x / _texture.width, (float)pixelCoordinate.y / _texture.height);
+            _texture.SetPixel(pixelCoordinate.x, pixelCoordinate.y, colorGroups[i].color);
 
-            _texture.SetPixel(pixelCoordinate.x, pixelCoordinate.y, meshData.colorGroups[i].color);
+            uvPositions[i] = new Vector2((float)pixelCoordinate.x / _texture.width, (float)pixelCoordinate.y / _texture.height);
         }
         _texture.Apply();
 
 
         meshData.SetOccupiedPixelsIndexes(unoccupiedPixelsIndexes);
-        meshData.SetColorGroupsPositions(positions);
+        meshData.SetColorGroupsUvPositions(uvPositions);
     }
 
     public static void SetPixelColor(int pixelIndex, Color color)

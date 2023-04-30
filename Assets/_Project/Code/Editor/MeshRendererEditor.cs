@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(MeshRenderer))]
-public class CustomMeshRendererEditor : Editor
+public class MeshRendererEditor : Editor
 {
     private FlatColorizer _flatColorizer;
     public override void OnInspectorGUI()

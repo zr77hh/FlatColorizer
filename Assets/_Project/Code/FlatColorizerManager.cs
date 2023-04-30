@@ -10,29 +10,31 @@ public static class FlatColorizerManager
 #if UNITY_EDITOR
     private const string FLAT_COLORED = "FlatColored_";
 
-
-    private static Material CreateMaterial()
+    private static void EnsureFileCreation(string folderPath)
     {
-        // Create the folder path
-        string folderPath = "Assets/Resources/FlatColorizer/Material";
-
         // Check if the folder exists, and create it if it doesn't
         if (!AssetDatabase.IsValidFolder(folderPath))
         {
             Directory.CreateDirectory(folderPath);
             AssetDatabase.Refresh();
         }
+    }
 
-        // Create a new instance of the material
+    private static Material CreateMaterial()
+    {
+        string folderPath = "Assets/Resources/FlatColorizer/Material";
+
+        EnsureFileCreation(folderPath);
+
+        // Create a new material
         Material newMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-
         newMaterial.mainTexture = GetTexture();
+        newMaterial.SetFloat("_Smoothness", 0.25f);
 
         // Save the material to a file
         string materialPath = $"{folderPath}/SharedMat.mat";
         AssetDatabase.CreateAsset(newMaterial, materialPath);
-
-        // Refresh the asset database to ensure the new material appears in the project view
+        AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
         Debug.Log("new material created");
@@ -41,28 +43,19 @@ public static class FlatColorizerManager
 
     private static Texture2D CreateTexture()
     {
-        // Create the folder path
         string folderPath = "Assets/Resources/FlatColorizer/Texture";
 
-        // Check if the folder exists, and create it if it doesn't
-        if (!AssetDatabase.IsValidFolder(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-            AssetDatabase.Refresh();
-        }
+        EnsureFileCreation(folderPath);
 
-
+        // Create a new texture
         Texture2D texture = new Texture2D(512, 512, TextureFormat.RGBA32, false);
-
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.filterMode = FilterMode.Point;
-
         texture.Apply();
 
-
+        // Save the texture to a file
         string texturePath = $"{folderPath}/Texture.asset";
         AssetDatabase.CreateAsset(texture, texturePath);
-
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
@@ -72,16 +65,11 @@ public static class FlatColorizerManager
 
     private static Mesh CreateFlatColoredMesh(Mesh mesh)
     {
-        // Create the folder path
-        string folderPath = "Assets/Resources/FlatColorizer/Mesh";
+        string filePath = "Assets/Resources/FlatColorizer/Mesh";
 
-        // Check if the folder exists, and create it if it doesn't
-        if (!AssetDatabase.IsValidFolder(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-            AssetDatabase.Refresh();
-        }
+        EnsureFileCreation(filePath);
 
+        // Create a new mesh
         Mesh flatColoredMesh = new Mesh();
         flatColoredMesh.vertices = mesh.vertices;
         flatColoredMesh.triangles = mesh.triangles;
@@ -90,9 +78,9 @@ public static class FlatColorizerManager
         flatColoredMesh.colors = mesh.colors;
         flatColoredMesh.tangents = mesh.tangents;
 
-        string materialPath = $"{folderPath}/{FLAT_COLORED}{mesh.name}.asset";
-        AssetDatabase.CreateAsset(flatColoredMesh, materialPath);
-
+        // Save the mesh to a file
+        string meshPath = $"{filePath}/{FLAT_COLORED}{mesh.name}.asset";
+        AssetDatabase.CreateAsset(flatColoredMesh, meshPath);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
@@ -104,19 +92,17 @@ public static class FlatColorizerManager
 
     private static FlatColoredMeshData CreateFlatColoredMeshData(Mesh flatColoredMesh)
     {
-        // Create directory if it doesn't exist
-        string directoryPath = "Assets/Resources/FlatColorizer/Mesh/MeshData";
-        if (!Directory.Exists(directoryPath))
-        {
-            Directory.CreateDirectory(directoryPath);
-            AssetDatabase.Refresh();
-        }
+        string filePath = "Assets/Resources/FlatColorizer/Mesh/MeshData";
 
+        EnsureFileCreation(filePath);
+
+        // Create a new mesh data
         FlatColoredMeshData flatColoredMeshData = ScriptableObject.CreateInstance<FlatColoredMeshData>();
-       
-        string filePath = Path.Combine(directoryPath, flatColoredMesh.name + "_data" + ".asset");
-        AssetDatabase.CreateAsset(flatColoredMeshData, filePath);
 
+
+        // Save the mesh data to a file
+        string meshDataPath = Path.Combine(filePath, flatColoredMesh.name + "_data" + ".asset");
+        AssetDatabase.CreateAsset(flatColoredMeshData, meshDataPath);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
@@ -147,6 +133,7 @@ public static class FlatColorizerManager
     {
         if (mesh.name.Contains(FLAT_COLORED))
             return mesh;
+
         string meshName = mesh.name.Contains(FLAT_COLORED) ? mesh.name : FLAT_COLORED + mesh.name;
 
         Mesh flatColoredMesh = Resources.Load<Mesh>($"FlatColorizer/Mesh/{meshName}");

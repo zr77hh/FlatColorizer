@@ -6,6 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class FlatColoredMeshData : ScriptableObject
 {
+    public int[] occupiedPixelsIndexes = new int[0];
     public List<ColorGroupData> colorGroups;
 
     public Mesh targetMesh;
@@ -24,6 +25,13 @@ public class FlatColoredMeshData : ScriptableObject
         colorGroups.Add(new ColorGroupData(uvPos));
         colorGroups[colorGroups.Count - 1].AddPosIndex(uvIndex);
 
+
+        EditorUtility.SetDirty(this);
+    }
+
+    public void SetOccupiedPixelsIndexes(int[] indexes)
+    {
+        occupiedPixelsIndexes = indexes;
 
         EditorUtility.SetDirty(this);
     }
@@ -50,16 +58,16 @@ public class FlatColoredMeshData : ScriptableObject
         targetMesh.uv = uv;
 
         EditorUtility.SetDirty(this);
-        //AssetDatabase.SaveAssets();
     }
 
     public void SetColor(int colorIndex, Color color)
     {
         colorGroups[colorIndex].color = color;
-        TextureManager.SetMeshColor(colorIndex, color);
-      
+
+        int pixelIndex = occupiedPixelsIndexes[colorIndex];
+        TextureManager.SetPixelColor(pixelIndex, color);
+
         EditorUtility.SetDirty(this);
-        //AssetDatabase.SaveAssets();
     }
 
     public void SetData(Mesh mesh)
@@ -74,6 +82,5 @@ public class FlatColoredMeshData : ScriptableObject
         TextureManager.AddMeshData(this);
         EditorUtility.SetDirty(this);
         AssetDatabase.SaveAssets();
-        Debug.Log(colorGroups.Count);
     }
 }

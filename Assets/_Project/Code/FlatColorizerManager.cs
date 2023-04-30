@@ -57,11 +57,6 @@ public static class FlatColorizerManager
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.filterMode = FilterMode.Point;
 
-        // Set the colors of the texture
-        texture.SetPixel(0, 0, Color.red);
-        texture.SetPixel(5, 6, Color.green);
-
-        // Apply the changes to the texture
         texture.Apply();
 
 
@@ -118,14 +113,14 @@ public static class FlatColorizerManager
         }
 
         FlatColoredMeshData flatColoredMeshData = ScriptableObject.CreateInstance<FlatColoredMeshData>();
-        flatColoredMeshData.SetData(flatColoredMesh);
-
+       
         string filePath = Path.Combine(directoryPath, flatColoredMesh.name + "_data" + ".asset");
         AssetDatabase.CreateAsset(flatColoredMeshData, filePath);
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
+        flatColoredMeshData.SetData(flatColoredMesh);
 
         Debug.Log("new FlatColoredMeshData created");
         return flatColoredMeshData;
@@ -168,6 +163,11 @@ public static class FlatColorizerManager
             Debug.LogWarning($"{mesh.name}_data not found");
 
         return meshData;
+    }
+
+    public static FlatColoredMeshData[] GetAllMeshesData()
+    {
+        return Resources.LoadAll<FlatColoredMeshData>($"FlatColorizer/Mesh/MeshData");
     }
 
 #endif

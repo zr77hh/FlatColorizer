@@ -48,30 +48,27 @@ public static class TextureManager
 
     private static int[] GetUnoccupiedPixelsIndexes(int count)
     {
-        int[] unoccupiedPixelsIndexes = new int[count];
-        int curIndex = 0;
+        FindeTexture();
 
-        int[] occupiedPixels = GetAllOccupiedPixelsIndexes();
-        Array.Sort(occupiedPixels);
-
-        for (int i = 0; i < occupiedPixels.Length; i++)
+        // get all pixels indexes
+        List<int> availablePixels = new List<int>();
+        for (int i = 0; i < _texture.width * _texture.height; i++)
         {
-            if (occupiedPixels[i] != i)
-            {
-                unoccupiedPixelsIndexes[curIndex] = i;
-                curIndex += 1;
-                if (curIndex == count)
-                {
-                    Debug.Log(i);
-                    return unoccupiedPixelsIndexes;
-                }
-
-            }
+            availablePixels.Add(i);
         }
 
-        for (int i = 0; i < count - curIndex; i++)
+        //remove occupied pixels indexes
+        int[] occupiedPixels = GetAllOccupiedPixelsIndexes();
+        for (int i = 0; i < occupiedPixels.Length; i++)
         {
-            unoccupiedPixelsIndexes[i] = occupiedPixels.Length + i;
+            availablePixels.Remove(occupiedPixels[i]);
+        }
+
+        // return unoccupied pixels indexes 
+        int[] unoccupiedPixelsIndexes = new int[count];
+        for (int i = 0; i < count; i++)
+        {
+            unoccupiedPixelsIndexes[i] = availablePixels[i];
         }
 
         return unoccupiedPixelsIndexes;

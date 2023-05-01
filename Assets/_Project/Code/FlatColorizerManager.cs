@@ -8,7 +8,15 @@ using UnityEngine;
 public static class FlatColorizerManager
 {
 #if UNITY_EDITOR
-    private const string FLAT_COLORED = "FlatColored_";
+    private static string _flatColored = "FlatColored_";
+
+    private static string _rootFilePath = "Assets/FlatColorizer";
+    private static string _materialFilePath = _rootFilePath + "/Material";
+    private static string _meshFilePath = _rootFilePath + "/Mesh";
+    private static string _meshDataFilePath = _rootFilePath + "/MeshData";
+
+    private static string _sharedMaterialName = "SharedMat.mat";
+    private static string _sharedTextureName = "Texture.asset";
 
     private static void EnsureFileCreation(string folderPath)
     {
@@ -22,9 +30,7 @@ public static class FlatColorizerManager
 
     private static Material CreateMaterial()
     {
-        string folderPath = "Assets/Resources/FlatColorizer/Material";
-
-        EnsureFileCreation(folderPath);
+        EnsureFileCreation(_materialFilePath);
 
         // Create a new material
         Material newMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
@@ -32,7 +38,7 @@ public static class FlatColorizerManager
         newMaterial.SetFloat("_Smoothness", 0.25f);
 
         // Save the material to a file
-        string materialPath = $"{folderPath}/SharedMat.mat";
+        string materialPath = $"{_materialFilePath}/{_sharedMaterialName}";
         AssetDatabase.CreateAsset(newMaterial, materialPath);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -43,9 +49,7 @@ public static class FlatColorizerManager
 
     private static Texture2D CreateTexture()
     {
-        string folderPath = "Assets/Resources/FlatColorizer/Texture";
-
-        EnsureFileCreation(folderPath);
+        EnsureFileCreation(_materialFilePath);
 
         // Create a new texture
         Texture2D texture = new Texture2D(512, 512, TextureFormat.RGBA32, false);
@@ -54,7 +58,7 @@ public static class FlatColorizerManager
         texture.Apply();
 
         // Save the texture to a file
-        string texturePath = $"{folderPath}/Texture.asset";
+        string texturePath = $"{_materialFilePath}/{_sharedTextureName}";
         AssetDatabase.CreateAsset(texture, texturePath);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -65,9 +69,7 @@ public static class FlatColorizerManager
 
     private static Mesh CreateFlatColoredMesh(Mesh mesh)
     {
-        string filePath = "Assets/Resources/FlatColorizer/Mesh";
-
-        EnsureFileCreation(filePath);
+        EnsureFileCreation(_meshFilePath);
 
         // Create a new mesh
         Mesh flatColoredMesh = new Mesh();
@@ -79,7 +81,7 @@ public static class FlatColorizerManager
         flatColoredMesh.tangents = mesh.tangents;
 
         // Save the mesh to a file
-        string meshPath = $"{filePath}/{FLAT_COLORED}{mesh.name}.asset";
+        string meshPath = $"{_meshFilePath}/{_flatColored}{mesh.name}.asset";
         AssetDatabase.CreateAsset(flatColoredMesh, meshPath);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -92,16 +94,14 @@ public static class FlatColorizerManager
 
     private static FlatColoredMeshData CreateFlatColoredMeshData(Mesh flatColoredMesh)
     {
-        string filePath = "Assets/Resources/FlatColorizer/Mesh/MeshData";
-
-        EnsureFileCreation(filePath);
+        EnsureFileCreation(_meshDataFilePath);
 
         // Create a new mesh data
         FlatColoredMeshData flatColoredMeshData = ScriptableObject.CreateInstance<FlatColoredMeshData>();
 
 
         // Save the mesh data to a file
-        string meshDataPath = Path.Combine(filePath, flatColoredMesh.name + "_data" + ".asset");
+        string meshDataPath = $"{_meshDataFilePath}/{flatColoredMesh.name}_data.asset";
         AssetDatabase.CreateAsset(flatColoredMeshData, meshDataPath);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -114,7 +114,7 @@ public static class FlatColorizerManager
 
     public static Material GetSharedMaterial()
     {
-        Material sharedMat = Resources.Load<Material>("FlatColorizer/Material/SharedMat");
+        Material sharedMat = AssetDatabase.LoadAssetAtPath<Material>($"{_materialFilePath}/{_sharedMaterialName}");
         if (sharedMat == null)
             sharedMat = CreateMaterial();
 
@@ -123,20 +123,21 @@ public static class FlatColorizerManager
 
     public static Texture2D GetTexture()
     {
-        Texture2D texture = Resources.Load<Texture2D>("FlatColorizer/Texture/Texture");
+        Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>($"{_materialFilePath}/{_sharedTextureName}");
         if (texture == null)
             texture = CreateTexture();
+
         return texture;
     }
 
     public static Mesh GetFlatColorizedMesh(Mesh mesh)
     {
-        if (mesh.name.Contains(FLAT_COLORED))
+        if (mesh.name.Contains(_flatColored))
             return mesh;
 
-        string meshName = mesh.name.Contains(FLAT_COLORED) ? mesh.name : FLAT_COLORED + mesh.name;
+        string meshName = mesh.name.Contains(_flatColored) ? mesh.name : _flatColored + mesh.name;
 
-        Mesh flatColoredMesh = Resources.Load<Mesh>($"FlatColorizer/Mesh/{meshName}");
+        Mesh flatColoredMesh = AssetDatabase.LoadAssetAtPath<Mesh>($"{_meshFilePath}/{meshName}.asset");
         if (flatColoredMesh == null)
             flatColoredMesh = CreateFlatColoredMesh(mesh);
 
@@ -145,7 +146,7 @@ public static class FlatColorizerManager
 
     public static FlatColoredMeshData GetMeshData(Mesh mesh)
     {
-        FlatColoredMeshData meshData = Resources.Load<FlatColoredMeshData>($"FlatColorizer/Mesh/MeshData/{mesh.name + "_data"}");
+        FlatColoredMeshData meshData = AssetDatabase.LoadAssetAtPath<FlatColoredMeshData>($"{_meshDataFilePath}/{mesh.name}_data.asset");
         if (meshData == null)
             Debug.LogWarning($"{mesh.name}_data not found");
 
@@ -154,7 +155,19 @@ public static class FlatColorizerManager
 
     public static FlatColoredMeshData[] GetAllMeshesData()
     {
-        return Resources.LoadAll<FlatColoredMeshData>($"FlatColorizer/Mesh/MeshData");
+        string[] guids = AssetDatabase.FindAssets($"t:{nameof(FlatColoredMeshData)}", new[] { _meshDataFilePath });
+
+        List<FlatColoredMeshData> meshesData = new List<FlatColoredMeshData>();
+
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            FlatColoredMeshData data = AssetDatabase.LoadAssetAtPath<FlatColoredMeshData>(path);
+
+            meshesData.Add(data);
+        }
+
+        return meshesData.ToArray();
     }
 
 #endif

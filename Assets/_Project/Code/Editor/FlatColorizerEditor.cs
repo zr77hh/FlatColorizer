@@ -1,45 +1,48 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(FlatColorizer))]
-public class FlatColorizerEditor : Editor
+namespace MSZ.FlatColorizer
 {
-    private FlatColorizer _flatColorizer;
-    private int _colorsCount;
-
-    private void OnEnable()
+    [CustomEditor(typeof(FlatColorizer))]
+    public class FlatColorizerEditor : Editor
     {
-        _flatColorizer = serializedObject.targetObject as FlatColorizer;
+        private FlatColorizer _flatColorizer;
+        private int _colorsCount;
 
-        if (_flatColorizer != _flatColorizer.GetComponent<FlatColorizer>())
+        private void OnEnable()
         {
-            Debug.LogError($"there is already a {nameof(FlatColorizer)} component");
-            DestroyImmediate(_flatColorizer);
-            return;
-        }
+            _flatColorizer = serializedObject.targetObject as FlatColorizer;
 
-        _flatColorizer.FlatColorize();
-        _colorsCount = _flatColorizer.GetColorCount();
-    }
-
-    public override void OnInspectorGUI()
-    {
-        serializedObject.Update();
-
-        for (int i = 0; i < _colorsCount; i++)
-        {
-            Color colorValue = _flatColorizer.GetColorAtIndex(i);
-
-            EditorGUI.BeginChangeCheck();
-
-            colorValue = EditorGUILayout.ColorField("Color " + i, colorValue);
-
-            if (EditorGUI.EndChangeCheck())
+            if (_flatColorizer != _flatColorizer.GetComponent<FlatColorizer>())
             {
-                _flatColorizer.UpdateColor(i, colorValue);
+                Debug.LogError($"there is already a {nameof(FlatColorizer)} component");
+                DestroyImmediate(_flatColorizer);
+                return;
             }
+
+            _flatColorizer.FlatColorize();
+            _colorsCount = _flatColorizer.GetColorCount();
         }
 
-        serializedObject.ApplyModifiedProperties();
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
+
+            for (int i = 0; i < _colorsCount; i++)
+            {
+                Color colorValue = _flatColorizer.GetColorAtIndex(i);
+
+                EditorGUI.BeginChangeCheck();
+
+                colorValue = EditorGUILayout.ColorField("Color " + i, colorValue);
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    _flatColorizer.UpdateColor(i, colorValue);
+                }
+            }
+
+            serializedObject.ApplyModifiedProperties();
+        }
     }
 }

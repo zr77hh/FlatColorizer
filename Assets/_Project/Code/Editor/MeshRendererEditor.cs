@@ -1,24 +1,27 @@
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(MeshRenderer))]
-public class MeshRendererEditor : Editor
+namespace MSZ.FlatColorizer
 {
-    private FlatColorizer _flatColorizer;
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(MeshRenderer))]
+    public class MeshRendererEditor : Editor
     {
-        base.OnInspectorGUI();
-
-        GUILayout.Space(10f);
-
-        MeshRenderer meshRenderer = serializedObject.targetObject as MeshRenderer;
-
-        if (_flatColorizer == null)
-            _flatColorizer = meshRenderer.GetComponent<FlatColorizer>();
-
-        if (_flatColorizer == null && GUILayout.Button($"Add {nameof(FlatColorizer)}"))
+        private FlatColorizer _flatColorizer;
+        public override void OnInspectorGUI()
         {
-            _flatColorizer = meshRenderer.gameObject.AddComponent<FlatColorizer>();
+            base.OnInspectorGUI();
+
+            GUILayout.Space(10f);
+
+            MeshRenderer meshRenderer = serializedObject.targetObject as MeshRenderer;
+
+            if (_flatColorizer == null)
+                _flatColorizer = meshRenderer.GetComponent<FlatColorizer>();
+
+            if (_flatColorizer == null && GUILayout.Button($"Add {nameof(FlatColorizer)}"))
+            {
+                _flatColorizer = meshRenderer.gameObject.AddComponent<FlatColorizer>();
+            }
         }
     }
 }

@@ -9,10 +9,11 @@ namespace MSZ.FlatColorizer
     public class FlatColoredMeshData : ScriptableObject
     {
 #if UNITY_EDITOR
-        public int[] occupiedPixelsIndexes = new int[0];
-        public List<ColorGroupData> colorGroups;
 
-        public Mesh targetMesh;
+        [HideInInspector] public int[] occupiedPixelsIndexes = new int[0];
+        [HideInInspector] public List<ColorGroupData> colorGroups;
+
+        [HideInInspector] public Mesh targetMesh;
 
         private void AddToColorGroups(int uvIndex, Vector2 uvPos)
         {

@@ -170,7 +170,7 @@ namespace MSZ.FlatColorizer
 
             return meshesData.ToArray();
         }
-
 #endif
+
     }
 }

@@ -11,7 +11,7 @@ namespace MSZ.FlatColorizer
 #if UNITY_EDITOR
         private static string _flatColored = "FlatColored_";
 
-        private static string _rootFilePath = "Assets/FlatColorizer";
+        private static string _rootFilePath = "Assets/FlatColorizerData";
         private static string _materialFilePath = _rootFilePath + "/Material";
         private static string _meshFilePath = _rootFilePath + "/Mesh";
         private static string _meshDataFilePath = _rootFilePath + "/MeshData";

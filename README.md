@@ -1,4 +1,4 @@
-Flat_Colorizer
+Flat Colorizer
 https://www.youtube.com/watch?v=fp6x5F2Dqe4&t=1s
 
 Model UV Preparation Most low poly models like Synty Studios models for example are ready to use but if you are using a costum model follow the steps down.
@@ -7,17 +7,17 @@ Model UV Preparation Most low poly models like Synty Studios models for example 
 
 2.make sure to give the model a unique name
 
-3.open the UV editing window and select the vertices that you want them to be in one color
+3.open the UV editing window and select the faces that you want them to be in one color
 
-لقطة الشاشة 2023-05-04 224909
+![241161879-b570c7e0-9376-4dd9-8073-b9d3c61fe951](https://github.com/zr77hh/FlatColorizer/assets/76841804/65bf384a-3e18-4031-b681-055d5a01c477)
 
 4.new scale them down to zero
 
-لقطة الشاشة 2023-05-04 224946
+![241161965-9dffb9f8-0bd0-4b6a-b872-307bedb06c2b](https://github.com/zr77hh/FlatColorizer/assets/76841804/b4ac3857-3144-4ec6-a011-d64421c0458d)
 
 5.repeat the process for each color you want
 
-لقطة الشاشة 2023-05-04 225132
+![241162083-fd7a47df-cc4d-4d3c-a349-ab70e6b133c8](https://github.com/zr77hh/FlatColorizer/assets/76841804/3ca947c5-efce-4472-9cc1-bf80f34062ea)
 
 in this case, we have 3 colors
 
@@ -29,15 +29,15 @@ How To Flat Colorize The Models
 
 1.select the object that you want to flat colorize
 
-لقطة الشاشة 2023-05-05 000510
+![241162830-2a9488f7-004f-4f03-bfcf-e34186bf7653](https://github.com/zr77hh/FlatColorizer/assets/76841804/a978b034-2f76-4e3b-a922-dd730d46d71e)
 
 2.add a FlatColorizer component by either clicking on the Add Flatcolorizer button or by adding the component manually
 
-لقطة الشاشة 2023-05-05 000127
+![241162972-fa18e141-8f19-43ca-9179-f71bf7b4caa5](https://github.com/zr77hh/FlatColorizer/assets/76841804/5cd40edd-bfdd-41f5-9885-9ed8d87a2da5)
 
 3.start adjusting the colors
 
-لقطة الشاشة 2023-05-05 001438
+![241163092-41aabb92-5c7e-458e-84e9-e59f20c6057f](https://github.com/zr77hh/FlatColorizer/assets/76841804/a52b0329-e70f-4dd3-998e-337b374c4dfd)
 
 Important Notes:
 

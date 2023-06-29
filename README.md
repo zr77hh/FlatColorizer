@@ -1,7 +1,11 @@
 Flat Colorizer: 
 https://www.youtube.com/watch?v=fp6x5F2Dqe4&t=1s
 
+Download the package from the Unity assets store: https://assetstore.unity.com/packages/tools/utilities/flat-colorizer-254539
+
+
 Model UV Preparation Most low poly models like Synty Studios models for example are ready to use but if you are using a costum model follow the steps down.
+
 
 1.open the model in Blender
 
